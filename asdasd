@@ -1,7 +1,7 @@
 import peewee
 from peewee import *
 
-db = SqliteDatabase('TicTacToeDatabase.db')
+db = SqliteDatabase('news_bot.db')
 
 
 class Stat(Model):
@@ -14,7 +14,6 @@ class Stat(Model):
         database = db
         order_by = 'name'
         db_table = 'stats'
-
 
 def write_player(nick):
     with db:
@@ -39,12 +38,12 @@ def get_stats(nick):
         return [player_stats.name, player_stats.business_number_of_requests, player_stats.entertainment_number_of_requests]
 
 
-def update_stats(nick, message):
+def update_stats(nick, result):
     with db:
         player_stats = get_stats(nick)
-        if message == business:
-            player_stats.business_number_of_requests += 1
-        elif message == entertainment:
-            player_stats.entertainment_number_of_requests += 1
-            {Stat.business_number_of_requests: player_stats[1], Stat.entertainment_number_of_requests: player_stats[2]}.where(Stat.name == nick)
+        if (result == 'business') or (result == '/business'):
+            player_stats[1] += 1
+        elif (result == 'entertainment') or (result == '/entertainment'):
+            player_stats[2] += 1
+        query=Stat.update({Stat.business_number_of_requests: player_stats[1], Stat.entertainment_number_of_requests: player_stats[2]}).where(Stat.name == nick)
         query.execute()
